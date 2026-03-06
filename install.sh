@@ -97,10 +97,36 @@ if [ "$INSTALL_CONFIG" = true ]; then
   fi
 fi
 
+# 대시보드 설치 (로컬 모드일 때 프로젝트에 복사)
+DASHBOARD_SRC="$SCRIPT_DIR/dashboard.html"
+STATE_SRC="$SCRIPT_DIR/dashboard-state.template.json"
+
+if [ "$MODE" = "local" ]; then
+  if [ -f "$DASHBOARD_SRC" ]; then
+    cp "$DASHBOARD_SRC" "./dashboard.html"
+    echo "대시보드 설치됨: ./dashboard.html"
+  fi
+  if [ -f "$STATE_SRC" ]; then
+    if [ ! -f "./dashboard-state.json" ]; then
+      cp "$STATE_SRC" "./dashboard-state.json"
+      echo "대시보드 상태 템플릿 설치됨: ./dashboard-state.json"
+    else
+      echo "dashboard-state.json 이미 존재 (덮어쓰지 않음)"
+    fi
+  fi
+fi
+
 echo ""
 echo "=== 설치 요약 ==="
 echo "에이전트: ${INSTALLED}개 설치됨"
 echo "위치: $TARGET_DIR"
+if [ "$MODE" = "local" ] && [ -f "./dashboard.html" ]; then
+  echo "대시보드: ./dashboard.html"
+  echo ""
+  echo "대시보드 사용법:"
+  echo "  npx serve .     # 로컬 서버로 열기 (자동 동기화 지원)"
+  echo "  open dashboard.html  # 직접 열기"
+fi
 echo ""
 echo "사용 방법:"
 echo "  - 개별 호출: \"frontend 에이전트로 컴포넌트 만들어줘\""
